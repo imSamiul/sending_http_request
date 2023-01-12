@@ -6,23 +6,20 @@ import "./App.css";
 function App() {
   const [movies, setMovies] = useState([]);
 
-  function fetchMoviesHandler() {
-    console.log("clicked");
-    fetch("https://swapi.dev/api/films")
-      .then((response) => {
-        return response.json();
-      })
-      .then((data) => {
-        const movieObj = data.results.map((movie) => {
-          return {
-            episodeId: movie.episode_id,
-            title: movie.title,
-            releaseDate: movie.release_date,
-            openingText: movie.opening_crawl,
-          };
-        });
-        setMovies(movieObj);
-      });
+  async function fetchMoviesHandler() {
+    const response = await fetch("https://swapi.dev/api/films");
+
+    const data = await response.json();
+
+    const movieObj = data.results.map((movie) => {
+      return {
+        episodeId: movie.episode_id,
+        title: movie.title,
+        releaseDate: movie.release_date,
+        openingText: movie.opening_crawl,
+      };
+    });
+    setMovies(movieObj);
   }
 
   return (
