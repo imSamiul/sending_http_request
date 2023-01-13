@@ -3,11 +3,13 @@ import React, { useCallback, useEffect, useState } from "react";
 import MoviesList from "./components/MoviesList";
 import "./App.css";
 import AddMovie from "./components/AddMovie";
+import MovieList from "./components/MoviesList";
 
 function App() {
   const [movies, setMovies] = useState([]);
   const [isLoading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [dataChange, setDataChange] = useState(false);
 
   const fetchMoviesHandler = useCallback(async () => {
     setLoading(true);
@@ -20,36 +22,49 @@ function App() {
         throw new Error("Something went wrong");
       }
       const data = await response.json();
-      const movieObj = data.results.map((movie) => {
-        return {
-          episodeId: movie.episode_id,
-          title: movie.title,
-          releaseDate: movie.release_date,
-          openingText: movie.opening_crawl,
+      let movieList = [];
+      for (const id in data) {
+        const movie = {
+          key: id,
+          title: data[id].title,
+          releaseDat: data[id].releaseDate,
+          openingText: data[id].openingText,
         };
-      });
-      setMovies(movieObj);
+        movieList.push(movie);
+
+        // console.log(data);
+      }
+      setMovies(movieList);
     } catch (error) {
       setError(error.message);
     }
     setLoading(false);
+    setDataChange(false);
   }, []);
 
   useEffect(() => {
     fetchMoviesHandler();
-  }, [fetchMoviesHandler]);
+  }, [dataChange, fetchMoviesHandler]);
 
-  const addMovieHandler = (movie) => {
-    console.log(movie);
-  };
+  async function addMovieHandler(movie) {
+    const response = await fetch(
+      "https://sending-http-request-f0115-default-rtdb.firebaseio.com/movies.json",
+      {
+        method: "post",
+        body: JSON.stringify(movie),
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+    const data = await response.json();
+    setDataChange(true);
+    console.log(data);
+  }
 
   let content = <p>No movie is loaded.</p>;
   if (isLoading && movies.length === 0) {
-    console.log("check1");
     content = <p>Loading.....</p>;
   }
   if (!isLoading && movies.length === 0) {
-    console.log("check2");
     content = <p>No movie is loaded.</p>;
   }
   if (!isLoading && movies.length > 0) {
@@ -63,7 +78,6 @@ function App() {
       </div>
     );
   }
-  console.log(content);
   return (
     <React.Fragment>
       <section>
