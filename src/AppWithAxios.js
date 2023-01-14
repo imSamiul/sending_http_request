@@ -44,15 +44,16 @@ function AppWithAxios() {
   }, [dataChange, fetchMoviesHandler]);
 
   async function addMovieHandler(movie) {
-    const response = await fetch(
+    const response = await axios.post(
       "https://sending-http-request-f0115-default-rtdb.firebaseio.com/movies.json",
       {
-        method: "post",
-        body: JSON.stringify(movie),
-        headers: { "Content-Type": "application/json" },
+        // By default axios uses Json for posting data so you don't need to stringify your data.
+        title: movie.title,
+        releaseDate: movie.releaseDate,
+        openingText: movie.openingText,
       }
     );
-    const data = await response.json();
+    const data = await response;
     setDataChange(true);
     console.log(data);
   }
