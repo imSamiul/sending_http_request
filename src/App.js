@@ -27,7 +27,7 @@ function App() {
         const movie = {
           key: id,
           title: data[id].title,
-          releaseDat: data[id].releaseDate,
+          releaseDate: data[id].releaseDate,
           openingText: data[id].openingText,
         };
         movieList.push(movie);
